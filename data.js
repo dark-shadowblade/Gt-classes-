@@ -1,16 +1,31 @@
-const subjects = [
+const subjectsData = [
     {
-        name: "Unit 1: Algebra",
-        notes: "notes/unit1.pdf",
-        lectures: [
-            "https://u.pcloud.link/publink/show?code=XZ9LU55Zh3Spos9PjPSbRNtomDREFkoW9gQy", 
-            "https://u.pcloud.link/publink/show?code=YABCX1234abcd", 
-            "https://u.pcloud.link/publink/show?code=ZDEFY5678wxyz"
-        ],
-        dpps: [
-            "dpp/unit1/dpp1.pdf",
-            "dpp/unit1/dpp2.pdf",
-            "dpp/unit1/dpp3.pdf"
+        subject: "Mathematics",
+        units: [
+            {
+                name: "Unit 1: Algebra",
+                notes: "https://example.com/unit1_notes.pdf",
+                lectures: [
+                    "https://u.pcloud.link/publink/show?code=LECTURE1",
+                    "https://u.pcloud.link/publink/show?code=LECTURE2"
+                ],
+                dpps: [
+                    "https://example.com/dpp1.pdf",
+                    "https://example.com/dpp2.pdf"
+                ]
+            },
+            {
+                name: "Unit 2: Calculus",
+                notes: "https://example.com/unit2_notes.pdf",
+                lectures: [
+                    "https://u.pcloud.link/publink/show?code=LECTURE3",
+                    "https://u.pcloud.link/publink/show?code=LECTURE4"
+                ],
+                dpps: [
+                    "https://example.com/dpp3.pdf",
+                    "https://example.com/dpp4.pdf"
+                ]
+            }
         ]
     }
 ];
