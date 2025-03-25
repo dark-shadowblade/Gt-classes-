@@ -1,112 +1,80 @@
-async function fetchLectureLink(pCloudLink) {
-    try {
-        const response = await fetch(pCloudLink);
-        if (!response.ok) throw new Error("Failed to fetch HTML content");
+document.addEventListener("DOMContentLoaded", function () {
+    const contentDiv = document.getElementById("content");
 
-        const htmlText = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, "text/html");
+    async function fetchPCloudLink(baseLink) {
+        try {
+            const response = await fetch(baseLink);
+            if (!response.ok) throw new Error("Failed to fetch HTML content");
 
-        let scriptTags = doc.querySelectorAll("script");
-        let publinkDataScript = "";
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, "text/html");
 
-        scriptTags.forEach(script => {
-            if (script.textContent.includes("publinkData")) {
-                publinkDataScript = script.textContent;
-            }
-        });
+            // Extract publinkData from scripts
+            const scriptTags = doc.querySelectorAll("script");
+            let publinkDataScript = "";
 
-        if (publinkDataScript) {
-            let dataMatch = publinkDataScript.match(/var publinkData = ({.*?});/s);
-            if (dataMatch && dataMatch[1]) {
-                let publinkData = JSON.parse(dataMatch[1]);
-                if (publinkData.variants && publinkData.variants[0]) {
-                    return "https://p-def6.pcloud.com" + publinkData.variants[0].path;
+            scriptTags.forEach((script) => {
+                if (script.textContent.includes("publinkData")) {
+                    publinkDataScript = script.textContent;
                 }
-            }
-        }
-        return null;
-    } catch (error) {
-        console.error("Error fetching pCloud link:", error);
-        return null;
-    }
-}
-
-// Function to render units and lectures
-async function renderUnits() {
-    const content = document.getElementById("content");
-    content.innerHTML = "";
-
-    for (const subject of subjectsData) {
-        for (const unit of subject.units) {
-            let unitDiv = document.createElement("div");
-            unitDiv.classList.add("unit");
-
-            let unitTitle = document.createElement("h2");
-            unitTitle.textContent = unit.name;
-            unitTitle.addEventListener("click", function () {
-                let contentDiv = unitDiv.querySelector(".unit-content");
-                contentDiv.style.display = contentDiv.style.display === "block" ? "none" : "block";
             });
 
-            let contentDiv = document.createElement("div");
-            contentDiv.classList.add("unit-content");
-
-            let notesLink = document.createElement("a");
-            notesLink.href = unit.notes;
-            notesLink.textContent = "📄 Download Notes";
-            notesLink.target = "_blank";
-
-            let lecturesDppList = document.createElement("div");
-            lecturesDppList.innerHTML = "<h3>🎥 Lectures & 📝 DPPs:</h3>";
-
-            for (let i = 0; i < unit.lectures.length; i++) {
-                let lectureDppPair = document.createElement("div");
-                lectureDppPair.classList.add("lecture-dpp-pair");
-
-                // Fetch lecture link dynamically
-                let lectureLink = await fetchLectureLink(unit.lectures[i]);
-
-                let lectureElement = document.createElement("a");
-                lectureElement.href = "#";
-                lectureElement.textContent = `Lecture ${i + 1}`;
-                if (lectureLink) {
-                    lectureElement.addEventListener("click", function (event) {
-                        event.preventDefault();
-                        playLecture(subject.subject, unit.name, `Lecture ${i + 1}`, lectureLink, unit.notes, unit.dpps[i]);
-                    });
-                } else {
-                    lectureElement.style.color = "red";
-                    lectureElement.textContent += " (Unavailable)";
+            if (publinkDataScript) {
+                const dataMatch = publinkDataScript.match(/var publinkData = ({.*?});/s);
+                if (dataMatch && dataMatch[1]) {
+                    const publinkData = JSON.parse(dataMatch[1]);
+                    if (publinkData && publinkData.variants && publinkData.variants[0]) {
+                        return "https://p-def6.pcloud.com" + publinkData.variants[0].path;
+                    }
                 }
-
-                let dppLink = document.createElement("a");
-                dppLink.href = unit.dpps[i];
-                dppLink.textContent = `DPP ${i + 1}`;
-                dppLink.target = "_blank";
-
-                lectureDppPair.appendChild(lectureElement);
-                lectureDppPair.appendChild(dppLink);
-                lecturesDppList.appendChild(lectureDppPair);
             }
-
-            contentDiv.appendChild(notesLink);
-            contentDiv.appendChild(lecturesDppList);
-            unitDiv.appendChild(unitTitle);
-            unitDiv.appendChild(contentDiv);
-            content.appendChild(unitDiv);
+            throw new Error("pCloud link not found");
+        } catch (error) {
+            console.error("Error fetching pCloud link:", error);
+            return null;
         }
     }
-}
 
-// Function to play lecture inside iframe
-function playLecture(subject, unit, lectureTitle, lectureLink, notesLink, dppLink) {
-    document.getElementById("player-container").style.display = "block";
-    document.getElementById("player-title").textContent = `${subject} - ${unit} - ${lectureTitle}`;
-    document.getElementById("lecture-frame").src = lectureLink;
-    document.getElementById("notes-btn").href = notesLink;
-    document.getElementById("dpp-btn").href = dppLink;
-}
+    subjectsData.forEach((subject) => {
+        subject.units.forEach((unit, unitIndex) => {
+            const unitDiv = document.createElement("div");
+            unitDiv.classList.add("unit");
 
-// Load the units and lectures dynamically
-window.onload = renderUnits;
+            const unitHeader = document.createElement("h2");
+            unitHeader.textContent = unit.name;
+            unitDiv.appendChild(unitHeader);
+
+            const unitContent = document.createElement("div");
+            unitContent.classList.add("unit-content");
+
+            unit.lectures.forEach(async (lecture, lectureIndex) => {
+                const lectureDPPDiv = document.createElement("div");
+                lectureDPPDiv.classList.add("lecture-dpp-pair");
+
+                const lectureLink = document.createElement("a");
+                lectureLink.textContent = `Lecture ${lectureIndex + 1}`;
+                
+                const pCloudLink = await fetchPCloudLink(lecture);
+                if (pCloudLink) {
+                    lectureLink.href = `player.html?subject=${encodeURIComponent(subject.subject)}&unit=${encodeURIComponent(unit.name)}&lecture=${encodeURIComponent(`Lecture ${lectureIndex + 1}`)}&video=${encodeURIComponent(pCloudLink)}&notes=${encodeURIComponent(unit.notes)}&dpp=${encodeURIComponent(unit.dpps[lectureIndex])}`;
+                    lectureLink.target = "_blank";
+                } else {
+                    lectureLink.textContent = `Lecture ${lectureIndex + 1} (Unavailable)`;
+                    lectureLink.style.color = "gray";
+                    lectureLink.style.pointerEvents = "none";
+                }
+
+                lectureDPPDiv.appendChild(lectureLink);
+                unitContent.appendChild(lectureDPPDiv);
+            });
+
+            unitDiv.appendChild(unitContent);
+            contentDiv.appendChild(unitDiv);
+
+            unitHeader.addEventListener("click", () => {
+                unitContent.style.display = unitContent.style.display === "none" ? "block" : "none";
+            });
+        });
+    });
+});
