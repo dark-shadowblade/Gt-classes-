@@ -65,7 +65,8 @@ async function renderUnits() {
 
             let lectureLink = document.createElement("a");
             lectureLink.textContent = `📌 Lecture ${i + 1}`;
-            lectureLink.target = "_blank";
+            lectureLink.href = "#";
+            lectureLink.style.cursor = "pointer";
 
             let dppLink = document.createElement("a");
             dppLink.href = unit.dpps[i] || "#";
@@ -75,9 +76,10 @@ async function renderUnits() {
             // Fetch the actual lecture link dynamically
             fetchLectureLink(lectureBaseLink).then(actualLectureLink => {
                 if (actualLectureLink) {
-                    lectureLink.href = actualLectureLink;
+                    lectureLink.addEventListener("click", () => {
+                        playLecture(unit.name, `Lecture ${i + 1}`, actualLectureLink);
+                    });
                 } else {
-                    lectureLink.href = "#"; // Prevent broken links
                     lectureLink.style.color = "red"; // Indicate error
                 }
             });
@@ -94,6 +96,17 @@ async function renderUnits() {
         unitDiv.appendChild(contentDiv);
         content.appendChild(unitDiv);
     }
+}
+
+// Function to display lecture in iframe
+function playLecture(unitName, lectureTitle, lectureUrl) {
+    let playerDiv = document.getElementById("player-container");
+    let playerTitle = document.getElementById("player-title");
+    let lectureFrame = document.getElementById("lecture-frame");
+
+    playerTitle.textContent = `${unitName} - ${lectureTitle}`;
+    lectureFrame.src = lectureUrl;
+    playerDiv.style.display = "block";
 }
 
 // Call render function
