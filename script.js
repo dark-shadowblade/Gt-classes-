@@ -63,11 +63,7 @@ async function renderUnits() {
 
             let lectureBaseLink = unit.lectures[i]; // pCloud public link
 
-            // Fetch the actual lecture link dynamically
-            let actualLectureLink = await fetchLectureLink(lectureBaseLink);
-
             let lectureLink = document.createElement("a");
-            lectureLink.href = actualLectureLink || "#";
             lectureLink.textContent = `📌 Lecture ${i + 1}`;
             lectureLink.target = "_blank";
 
@@ -75,6 +71,16 @@ async function renderUnits() {
             dppLink.href = unit.dpps[i] || "#";
             dppLink.textContent = `📌 DPP ${i + 1}`;
             dppLink.target = "_blank";
+
+            // Fetch the actual lecture link dynamically
+            fetchLectureLink(lectureBaseLink).then(actualLectureLink => {
+                if (actualLectureLink) {
+                    lectureLink.href = actualLectureLink;
+                } else {
+                    lectureLink.href = "#"; // Prevent broken links
+                    lectureLink.style.color = "red"; // Indicate error
+                }
+            });
 
             lectureDppPair.appendChild(lectureLink);
             lectureDppPair.appendChild(dppLink);
