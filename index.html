@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EdTech - Dynamic Lectures</title>
+    <title>EdTech Lectures</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <h1>📚 EdTech Lecture Platform</h1>
-    
-    <div id="content"></div> <!-- Units and lectures will be rendered here -->
+    <h1>📚 EdTech - Subject Lectures</h1>
 
-    <!-- Lecture Player Box -->
+    <div id="content"></div>
+
+    <!-- Lecture Player -->
     <div id="player-container" style="display: none;">
         <h2 id="player-title"></h2>
-        <div class="player-box">
-            <iframe id="lecture-frame" width="100%" height="400px" frameborder="0"></iframe>
+        <iframe id="lecture-frame" frameborder="0"></iframe>
+        <div class="player-buttons">
+            <a id="notes-btn" class="btn" target="_blank">📄 Open Notes</a>
+            <a id="dpp-btn" class="btn" target="_blank">📝 Open DPP</a>
         </div>
     </div>
 
-    <script src="data.js"></script> <!-- Load data separately -->
-    <script src="script.js"></script> <!-- JavaScript Logic -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
