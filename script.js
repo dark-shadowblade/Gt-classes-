@@ -3,46 +3,58 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const darkModeToggle = document.getElementById("darkModeToggle");
 
-    // Function to render the subjects
     function renderUnits() {
         content.innerHTML = "";
         subjects.forEach((unit, index) => {
             let unitDiv = document.createElement("div");
             unitDiv.classList.add("unit");
 
+            // Unit Title (Clickable)
             let unitTitle = document.createElement("h2");
             unitTitle.textContent = unit.name;
+            unitTitle.addEventListener("click", function () {
+                let contentDiv = unitDiv.querySelector(".unit-content");
+                contentDiv.style.display = contentDiv.style.display === "block" ? "none" : "block";
+            });
+
+            // Hidden Content (Lectures & DPPs)
+            let contentDiv = document.createElement("div");
+            contentDiv.classList.add("unit-content");
 
             let notesLink = document.createElement("a");
             notesLink.href = unit.notes;
-            notesLink.textContent = "Download Combined Notes";
+            notesLink.textContent = "📄 Download Combined Notes";
             notesLink.target = "_blank";
 
-            let lecturesList = document.createElement("div");
-            lecturesList.innerHTML = "<h3>Lectures:</h3>";
-            unit.lectures.forEach((lecture, i) => {
-                let lectureLink = document.createElement("a");
-                lectureLink.href = lecture;
-                lectureLink.textContent = `Lecture ${i + 1}`;
-                lectureLink.target = "_blank";
-                lecturesList.appendChild(lectureLink);
-            });
+            let lecturesDppList = document.createElement("div");
+            lecturesDppList.innerHTML = "<h3>🎥 Lectures & 📝 DPPs:</h3>";
 
-            let dppList = document.createElement("div");
-            dppList.innerHTML = "<h3>Daily Practice Problems:</h3>";
-            unit.dpps.forEach((dpp, i) => {
+            // Pairing Lectures and DPPs side by side
+            for (let i = 0; i < unit.lectures.length; i++) {
+                let lectureDppPair = document.createElement("div");
+                lectureDppPair.classList.add("lecture-dpp-pair");
+
+                let lectureLink = document.createElement("a");
+                lectureLink.href = unit.lectures[i];
+                lectureLink.textContent = `📌 Lecture ${i + 1}`;
+                lectureLink.target = "_blank";
+
                 let dppLink = document.createElement("a");
-                dppLink.href = dpp;
-                dppLink.textContent = `DPP ${i + 1}`;
+                dppLink.href = unit.dpps[i] || "#"; // If no DPP, use #
+                dppLink.textContent = `📌 DPP ${i + 1}`;
                 dppLink.target = "_blank";
-                dppList.appendChild(dppLink);
-            });
+
+                lectureDppPair.appendChild(lectureLink);
+                lectureDppPair.appendChild(dppLink);
+                lecturesDppList.appendChild(lectureDppPair);
+            }
+
+            // Append everything
+            contentDiv.appendChild(notesLink);
+            contentDiv.appendChild(lecturesDppList);
 
             unitDiv.appendChild(unitTitle);
-            unitDiv.appendChild(notesLink);
-            unitDiv.appendChild(lecturesList);
-            unitDiv.appendChild(dppList);
-
+            unitDiv.appendChild(contentDiv);
             content.appendChild(unitDiv);
         });
     }
