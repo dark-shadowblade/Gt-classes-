@@ -39,7 +39,7 @@ button:hover {
 
 .unit {
     background: white;
-    padding: 15px;
+    padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -47,6 +47,40 @@ button:hover {
 
 .unit h2 {
     color: #3498db;
+    cursor: pointer;
+    margin: 0;
+    padding: 10px;
+    background: #ecf0f1;
+    border-radius: 5px;
+}
+
+.unit h2:hover {
+    background: #d5dbdb;
+}
+
+/* Hide content initially */
+.unit-content {
+    display: none;
+    padding: 10px;
+}
+
+/* Flexbox for parallel alignment */
+.lecture-dpp-pair {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.lecture-dpp-pair a {
+    width: 48%;  /* Adjusts the width for better alignment */
+    text-align: left;
+    padding: 5px;
+    background: #f2f2f2;
+    border-radius: 5px;
+}
+
+.lecture-dpp-pair a:hover {
+    background: #e0e0e0;
 }
 
 a {
@@ -68,6 +102,24 @@ a:hover {
 
 .dark-mode .unit {
     background: #34495e;
+}
+
+.dark-mode .unit h2 {
+    background: #2c3e50;
+    color: white;
+}
+
+.dark-mode .unit-content {
+    background: #2c3e50;
+}
+
+.dark-mode .lecture-dpp-pair a {
+    background: #566573;
+    color: white;
+}
+
+.dark-mode .lecture-dpp-pair a:hover {
+    background: #485563;
 }
 
 .dark-mode button {
